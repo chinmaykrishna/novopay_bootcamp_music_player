@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.chinmaykrishna.myapplication.Services.MusicService;
 import com.example.chinmaykrishna.myapplication.models.Music;
 
 import java.util.ArrayList;
@@ -45,7 +46,11 @@ public class Firstfragment extends android.support.v4.app.Fragment{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(getActivity(),MainActivity.class));
+                Intent intent=new Intent(getActivity(), MusicService.class);
+                intent.putExtra(MusicService.KEY_METHOD,MusicService.METHOD_PLAY);
+                getActivity().startService(intent);
+                getActivity().startActivity(new Intent(getActivity(),MainActivity.class));
+               // startActivity(new Intent(getActivity(),MainActivity.class));
             }
         });
         return view;

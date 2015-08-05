@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.example.chinmaykrishna.myapplication.Services.MusicService;
 import com.squareup.picasso.Picasso;
 
 import java.util.logging.Handler;
@@ -20,11 +21,12 @@ import java.util.logging.Handler;
 
 public class MainActivity extends ActionBarActivity {
     Button play,pause,ff,rewind;
-    private MediaPlayer mediaPlayer;
+
     private SeekBar seekbar;
     private ImageView songPhoto;
     MusicHandler musichandler=new MusicHandler();
     private static final String TAG="MainActivity";
+    public int music_current_position;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,16 +37,17 @@ public class MainActivity extends ActionBarActivity {
         pause.setVisibility(View.VISIBLE);
         ff=(Button) findViewById(R.id.forward);
         rewind=(Button) findViewById(R.id.rewind);
-        mediaPlayer=MediaPlayer.create(this,R.raw.selfie);
+        music_current_position= MusicService.getcurrentposition();
+        //mediaPlayer=MediaPlayer.create(this,R.raw.selfie);
         seekbar=(SeekBar) findViewById(R.id.seekBar2);
         songPhoto=(ImageView) findViewById(R.id.music_cover);
         Picasso.with(MainActivity.this).load("http://loremflickr.com/320/240").into(songPhoto);
         //starts playing on click
-        mediaPlayer.start();
+        MusicService.playMusic();
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer.start();
+                MusicService.playMusic();
                 musichandler.sendEmptyMessage(WAKE_UP_AND_SEEK);
                 play.setVisibility(View.INVISIBLE);
                 pause.setVisibility(View.VISIBLE);
@@ -54,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer.pause();
+                MusicService.pauseMusic();
 
                 play.setVisibility(View.VISIBLE);
                 pause.setVisibility(View.INVISIBLE);
@@ -64,34 +67,32 @@ public class MainActivity extends ActionBarActivity {
         ff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 3000);
+                MusicService.ffMusic();
             }
         });
         rewind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 3000);
+                MusicService.rwMusic();
             }
         });
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+       /* mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 Toast.makeText(MainActivity.this, "Song Ended", Toast.LENGTH_SHORT).show();
                 play.setVisibility(View.VISIBLE);
                 pause.setVisibility(View.INVISIBLE);
             }
-        });
+        });*/
 
-        seekbar.setMax(mediaPlayer.getDuration());
+        seekbar.setMax(MusicService.songDuration());
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //Toast.makeText(MainActivity.this,"progress is "+progress,Toast.LENGTH_SHORT).show();
-                if(mediaPlayer!=null && fromUser) {
-                    mediaPlayer.seekTo(progress);
-                }//mediaPlayer.seekTo(mediaPlayer.getDuration());
+                MusicService.seekMusicTo(progress, fromUser);
                 if(progress==100)
                 {
                     play.setVisibility(View.VISIBLE);
@@ -142,14 +143,13 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg){
             if(msg.what== WAKE_UP_AND_SEEK)
             {
-                if(mediaPlayer!=null)
-                {
-                    if(mediaPlayer.isPlaying())
+
+                    if(MusicService.isMusicPlaying())
                     {
-                        seekbar.setProgress(mediaPlayer.getCurrentPosition());
+                        seekbar.setProgress(music_current_position);
                         sendEmptyMessageDelayed(WAKE_UP_AND_SEEK,200);
                     }
-                }
+
             }
         }
     }
