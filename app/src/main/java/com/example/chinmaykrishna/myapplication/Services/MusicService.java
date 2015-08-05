@@ -6,7 +6,9 @@ import android.media.MediaPlayer;
 import android.os.IBinder;
 
 import com.example.chinmaykrishna.myapplication.R;
+import com.example.chinmaykrishna.myapplication.events.MusicCompletedEvent;
 
+import de.greenrobot.event.EventBus;
 import hugo.weaving.DebugLog;
 
 /**
@@ -62,6 +64,12 @@ public class MusicService extends Service {
         {
             rwMusic();
         }
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                EventBus.getDefault().post(new MusicCompletedEvent());
+            }
+        });
 
         return super.onStartCommand(intent, flags, startId);
     }

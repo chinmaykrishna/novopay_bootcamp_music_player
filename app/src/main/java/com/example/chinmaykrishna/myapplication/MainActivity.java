@@ -14,9 +14,12 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.example.chinmaykrishna.myapplication.Services.MusicService;
+import com.example.chinmaykrishna.myapplication.events.MusicCompletedEvent;
 import com.squareup.picasso.Picasso;
 
 import java.util.logging.Handler;
+
+import de.greenrobot.event.EventBus;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -157,6 +160,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
+
         Log.d(TAG,"onStart");
     }
 
@@ -181,6 +186,14 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        EventBus.getDefault().unregister(this);
         Log.d(TAG, "onStop");
     }
+
+    public void onEvent(MusicCompletedEvent event) {
+    /* Do something */
+        Toast.makeText(MainActivity.this, "Song Ended", Toast.LENGTH_SHORT).show();
+        play.setVisibility(View.VISIBLE);
+        pause.setVisibility(View.INVISIBLE);
+    };
 }
