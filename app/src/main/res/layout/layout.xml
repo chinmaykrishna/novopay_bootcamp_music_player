@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignParentTop="true"
+        android:id="@+id/music_cover"
+
+        />
+    <TextView
+        android:id="@+id/song_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/music_cover"
+        android:textSize="20sp"
+        android:text="Song Name"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:id="@+id/artist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/song_name"
+        android:textSize="15sp"
+        android:text="Artist Name"
+        android:layout_centerHorizontal="true"/>
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBar2"
+        android:layout_marginBottom="56dp"
+        android:layout_above="@+id/button_play"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/play_button"
+
+        android:id="@+id/button_play"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/artist_name"
+        android:layout_alignEnd="@+id/artist_name" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pause"
+
+        android:id="@+id/button_pause"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/artist_name"
+        android:layout_alignEnd="@+id/artist_name"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rewind"
+        android:id="@+id/rewind"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/button_play"
+        android:layout_toStartOf="@+id/button_play" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/forward_button"
+        android:id="@+id/forward"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/song_name"
+        android:layout_toEndOf="@+id/song_name" />
+
+</RelativeLayout>
