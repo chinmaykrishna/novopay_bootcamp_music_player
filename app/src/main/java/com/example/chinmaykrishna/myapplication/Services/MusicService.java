@@ -7,6 +7,7 @@ import android.os.IBinder;
 
 import com.example.chinmaykrishna.myapplication.R;
 import com.example.chinmaykrishna.myapplication.events.MusicCompletedEvent;
+import com.example.chinmaykrishna.myapplication.events.MusicPlayEvent;
 
 import de.greenrobot.event.EventBus;
 import hugo.weaving.DebugLog;
@@ -46,11 +47,19 @@ public class MusicService extends Service {
     @DebugLog
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if(intent==null) {
+            return super.onStartCommand(intent, flags, startId);
+        }
         String method=intent.getStringExtra(KEY_METHOD);
-        mediaPlayer=MediaPlayer.create(this, R.raw.selfie);
+
+
         if(method.equals(METHOD_PLAY))
         {
+            mediaPlayer=MediaPlayer.create(this, R.raw.selfie);
+            EventBus.getDefault().post(new MusicPlayEvent(mediaPlayer.getDuration()));
             playMusic();
+
         }
         if(method.equals(METHOD_PAUSE))
         {
@@ -92,7 +101,9 @@ public class MusicService extends Service {
     }
 
     public static int songDuration() {
-        return mediaPlayer.getDuration();
+
+            return mediaPlayer.getDuration();
+
     }
 
     public static boolean isMusicPlaying(){

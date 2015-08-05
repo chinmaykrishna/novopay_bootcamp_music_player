@@ -1,5 +1,6 @@
 package com.example.chinmaykrishna.myapplication;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Message;
@@ -15,11 +16,13 @@ import android.widget.Toast;
 
 import com.example.chinmaykrishna.myapplication.Services.MusicService;
 import com.example.chinmaykrishna.myapplication.events.MusicCompletedEvent;
+import com.example.chinmaykrishna.myapplication.events.MusicPlayEvent;
 import com.squareup.picasso.Picasso;
 
 import java.util.logging.Handler;
 
 import de.greenrobot.event.EventBus;
+import hugo.weaving.DebugLog;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -30,6 +33,7 @@ public class MainActivity extends ActionBarActivity {
     MusicHandler musichandler=new MusicHandler();
     private static final String TAG="MainActivity";
     public int music_current_position;
+    public static int WAKE_UP_AND_SEEK=10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,13 +44,23 @@ public class MainActivity extends ActionBarActivity {
         pause.setVisibility(View.VISIBLE);
         ff=(Button) findViewById(R.id.forward);
         rewind=(Button) findViewById(R.id.rewind);
-        music_current_position= MusicService.getcurrentposition();
+
         //mediaPlayer=MediaPlayer.create(this,R.raw.selfie);
         seekbar=(SeekBar) findViewById(R.id.seekBar2);
         songPhoto=(ImageView) findViewById(R.id.music_cover);
         Picasso.with(MainActivity.this).load("http://loremflickr.com/320/240").into(songPhoto);
         //starts playing on click
-        MusicService.playMusic();
+        //MusicService.playMusic();
+        Intent intent=new Intent(MainActivity.this, MusicService.class);
+        intent.putExtra(MusicService.KEY_METHOD, MusicService.METHOD_PLAY);
+        startService(intent);
+
+
+        if(MusicService.isMusicPlaying())
+        {
+            musichandler.sendEmptyMessage(WAKE_UP_AND_SEEK);
+        }
+
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,15 +103,14 @@ public class MainActivity extends ActionBarActivity {
             }
         });*/
 
-        seekbar.setMax(MusicService.songDuration());
+
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //Toast.makeText(MainActivity.this,"progress is "+progress,Toast.LENGTH_SHORT).show();
                 MusicService.seekMusicTo(progress, fromUser);
-                if(progress==100)
-                {
+                if (progress == 100) {
                     play.setVisibility(View.VISIBLE);
                     pause.setVisibility(View.INVISIBLE);
                 }
@@ -113,6 +126,7 @@ public class MainActivity extends ActionBarActivity {
 
             }
         });
+
 
 
 
@@ -139,7 +153,7 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    public static int WAKE_UP_AND_SEEK=10;
+
 
     class MusicHandler extends android.os.Handler{
         @Override
@@ -149,7 +163,7 @@ public class MainActivity extends ActionBarActivity {
 
                     if(MusicService.isMusicPlaying())
                     {
-                        seekbar.setProgress(music_current_position);
+                        seekbar.setProgress(MusicService.getcurrentposition());
                         sendEmptyMessageDelayed(WAKE_UP_AND_SEEK,200);
                     }
 
@@ -196,4 +210,12 @@ public class MainActivity extends ActionBarActivity {
         play.setVisibility(View.VISIBLE);
         pause.setVisibility(View.INVISIBLE);
     };
+
+    @DebugLog
+    public void onEvent(MusicPlayEvent event){
+        play.setVisibility(View.INVISIBLE);
+        pause.setVisibility(View.VISIBLE);
+        seekbar.setMax(event.duration);
+        musichandler.sendEmptyMessage(WAKE_UP_AND_SEEK);
+    }
 }

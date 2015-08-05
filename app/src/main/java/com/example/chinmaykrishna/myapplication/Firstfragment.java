@@ -1,5 +1,6 @@
 package com.example.chinmaykrishna.myapplication;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.chinmaykrishna.myapplication.Services.MusicService;
+import com.example.chinmaykrishna.myapplication.events.UpdateMusicBar;
 import com.example.chinmaykrishna.myapplication.models.Music;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import hugo.weaving.DebugLog;
 
 /**
@@ -26,7 +29,7 @@ import hugo.weaving.DebugLog;
  */
 public class Firstfragment extends android.support.v4.app.Fragment{
 
-
+    Activity musicListActivity;
     ListView music_list_view;
     ListView listView;
     MusicAdapter musicAdapter;
@@ -46,10 +49,11 @@ public class Firstfragment extends android.support.v4.app.Fragment{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent=new Intent(getActivity(), MusicService.class);
-                intent.putExtra(MusicService.KEY_METHOD,MusicService.METHOD_PLAY);
-                getActivity().startService(intent);
-                getActivity().startActivity(new Intent(getActivity(),MainActivity.class));
+                String songName=musicList.get(position).getSongname();
+                String songAuthor=musicList.get(position).getAuthorname();
+                String songImageUrl=musicList.get(position).getSongimageurl();
+                EventBus.getDefault().post(new UpdateMusicBar(songName,songName));
+               // getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
                // startActivity(new Intent(getActivity(),MainActivity.class));
             }
         });
