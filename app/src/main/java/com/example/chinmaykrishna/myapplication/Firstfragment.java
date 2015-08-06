@@ -11,10 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.example.chinmaykrishna.myapplication.Network.MusicApi;
 import com.example.chinmaykrishna.myapplication.Services.MusicService;
 import com.example.chinmaykrishna.myapplication.events.UpdateMusicBar;
+import com.example.chinmaykrishna.myapplication.models.Collection1;
 import com.example.chinmaykrishna.myapplication.models.Music;
+import com.example.chinmaykrishna.myapplication.models.MusicApiResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +27,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 import hugo.weaving.DebugLog;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by chinmaykrishna on 04/08/15.
@@ -33,7 +40,7 @@ public class Firstfragment extends android.support.v4.app.Fragment{
     ListView music_list_view;
     ListView listView;
     MusicAdapter musicAdapter;
-    List<Music> musicList=new ArrayList<Music>();
+    List<Collection1> musicList=new ArrayList<Collection1>();
 
 
 
@@ -44,14 +51,29 @@ public class Firstfragment extends android.support.v4.app.Fragment{
 
         View view=inflater.inflate(R.layout.fragment_first,container,false);
         listView = (ListView) view.findViewById(R.id.first_fragment_listview);
-        musicAdapter = new MusicAdapter(getActivity(), musicList);
-        listView.setAdapter(musicAdapter);
+
+        MusicApi.getApi().getMusicList(new Callback<MusicApiResponse>() {
+            @Override
+            public void success(MusicApiResponse musicApiResponse, Response response) {
+                musicList.addAll(musicApiResponse.getResults().getCollection1());
+                musicAdapter = new MusicAdapter(getActivity(), musicList);
+                listView.setAdapter(musicAdapter);
+                Toast.makeText(getActivity(),"number of entries "+musicApiResponse.getResults().getCollection1().size(),Toast.LENGTH_SHORT).show();
+
+            }
+
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String songName=musicList.get(position).getSongname();
-                String songAuthor=musicList.get(position).getAuthorname();
-                String songImageUrl=musicList.get(position).getSongimageurl();
+                String songName=musicList.get(position).getSongName().getText();
+                String songAuthor=musicList.get(position).getAuthorName().getText();
+                String songImageUrl=musicList.get(position).getSongPhoto().getSrc();
                 EventBus.getDefault().post(new UpdateMusicBar(songName,songName));
                // getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
                // startActivity(new Intent(getActivity(),MainActivity.class));
@@ -60,14 +82,16 @@ public class Firstfragment extends android.support.v4.app.Fragment{
         return view;
     }
 
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        musicList.add(new Music("Music 1", "Author 1","http://loremflickr.com/320/240"));
+        /*musicList.add(new Music("Music 1", "Author 1","http://loremflickr.com/320/240"));
         musicList.add(new Music("Music 2","Author 2","http://loremflickr.com/320/240"));
         musicList.add(new Music("Music 3","Author 3","http://loremflickr.com/320/240"));
         musicList.add(new Music("Music 4","Author 4","http://loremflickr.com/320/240"));
         musicList.add(new Music("Music 5","Author 5","http://loremflickr.com/320/240"));
-        musicList.add(new Music("Music 6","Author 6","http://loremflickr.com/320/240"));
+        musicList.add(new Music("Music 6","Author 6","http://loremflickr.com/320/240"));*/
     }
 }
