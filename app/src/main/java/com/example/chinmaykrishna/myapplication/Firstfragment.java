@@ -3,6 +3,8 @@ package com.example.chinmaykrishna.myapplication;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.chinmaykrishna.myapplication.Network.MusicApi;
+import com.example.chinmaykrishna.myapplication.Provider.MusicDatabase;
 import com.example.chinmaykrishna.myapplication.Services.MusicService;
 import com.example.chinmaykrishna.myapplication.events.UpdateMusicBar;
 import com.example.chinmaykrishna.myapplication.models.Collection1;
@@ -42,6 +45,10 @@ public class Firstfragment extends android.support.v4.app.Fragment{
     MusicAdapter musicAdapter;
     List<Collection1> musicList=new ArrayList<Collection1>();
 
+    MusicCursorAdaptor musicCursorAdaptor;
+    MusicDatabase musicDbHelper;
+    SQLiteDatabase musicDb;
+
 
 
     @Nullable
@@ -51,8 +58,13 @@ public class Firstfragment extends android.support.v4.app.Fragment{
 
         View view=inflater.inflate(R.layout.fragment_first,container,false);
         listView = (ListView) view.findViewById(R.id.first_fragment_listview);
+        musicDbHelper=new MusicDatabase(getActivity());
+        musicDb=musicDbHelper.getReadableDatabase();
+        Cursor cursor=musicDb.query(MusicDatabase.Tables.MUSIC,null,null,null,null,null,null);
+        musicCursorAdaptor=new MusicCursorAdaptor(getActivity(),cursor);
+        listView.setAdapter(musicCursorAdaptor);
 
-        MusicApi.getApi().getMusicList(new Callback<MusicApiResponse>() {
+       /* MusicApi.getApi().getMusicList(new Callback<MusicApiResponse>() {
             @Override
             public void success(MusicApiResponse musicApiResponse, Response response) {
                 musicList.addAll(musicApiResponse.getResults().getCollection1());
@@ -67,14 +79,14 @@ public class Firstfragment extends android.support.v4.app.Fragment{
             public void failure(RetrofitError error) {
 
             }
-        });
+        });*/
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String songName=musicList.get(position).getSongName().getText();
                 String songAuthor=musicList.get(position).getAuthorName().getText();
                 String songImageUrl=musicList.get(position).getSongPhoto().getSrc();
-                EventBus.getDefault().post(new UpdateMusicBar(songName,songName));
+                EventBus.getDefault().post(new UpdateMusicBar(songName,songName,songImageUrl));
                // getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
                // startActivity(new Intent(getActivity(),MainActivity.class));
             }

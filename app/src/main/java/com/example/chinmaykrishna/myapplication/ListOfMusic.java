@@ -29,8 +29,7 @@ public class ListOfMusic extends FragmentActivity {
     private ViewPager viewPager;
     private MusicListFragmentStatePagerAdapter musicFragmentPager;
     private static  final int NUMBER_OF_FRAGMENTS=2;
-    MusicDatabase musicDbHelper;
-    SQLiteDatabase musicDb;
+
 
     public RelativeLayout music_bar;
 
@@ -49,8 +48,7 @@ public class ListOfMusic extends FragmentActivity {
         setContentView(R.layout.activity_viewpager);
 
         /****Database will be created when getwritable or getreadableis called*/
-        musicDbHelper=new MusicDatabase(getApplicationContext());
-        musicDb=musicDbHelper.getReadableDatabase();
+
         /***************************************************/
         viewPager=(ViewPager) findViewById(R.id.view_pager);
         musicFragmentPager=new MusicListFragmentStatePagerAdapter(getSupportFragmentManager());

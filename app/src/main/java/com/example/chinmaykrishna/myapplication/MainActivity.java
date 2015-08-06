@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.chinmaykrishna.myapplication.Services.MusicService;
 import com.example.chinmaykrishna.myapplication.events.MusicCompletedEvent;
 import com.example.chinmaykrishna.myapplication.events.MusicPlayEvent;
+import com.example.chinmaykrishna.myapplication.events.UpdateMusicBar;
 import com.squareup.picasso.Picasso;
 
 import java.util.logging.Handler;
@@ -217,5 +218,9 @@ public class MainActivity extends ActionBarActivity {
         pause.setVisibility(View.VISIBLE);
         seekbar.setMax(event.duration);
         musichandler.sendEmptyMessage(WAKE_UP_AND_SEEK);
+    }
+
+    public void onEvent(UpdateMusicBar event){
+        Picasso.with(MainActivity.this).load(event.songImageUrl).into(songPhoto);
     }
 }
